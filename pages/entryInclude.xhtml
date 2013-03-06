@@ -1,0 +1,93 @@
+<?
+//special view logic
+if($entry->title == '') $entry->title = 'Kein Betreff';
+
+$entry->title = htmlentities($entry->title);
+$entry->text  = htmlentities($entry->text);
+
+//highlight the search text
+if($request->getValue('search')) {
+     $entry->text  = str_replace($request->getValue('search'), '<strong class="highlight">'.$request->getValue('search').'</strong>', $entry->text);
+     $entry->title = str_replace($request->getValue('search'), '<strong class="highlight">'.$request->getValue('search').'</strong>', $entry->title);
+}
+$entry->text  = wordwrap($entry->text, 200, '<wbr>', true);
+if(isset($shorten) && $shorten==true && strlen($entry->text)>1000) {
+    $entry->text  = substr($entry->text, 0, 1000).'...';
+}
+$entry->text  = nl2br($entry->text);
+
+if(substr($entry->date, 0, 10)==date('Y-m-d')) {
+    $entry->date = 'Heute';
+}else{
+    $entry->date = gmdate('d.m.Y H:i:s', strtotime($entry->date));
+}
+?>
+
+<h2><span class=""><?=$entry->date?>:</span> <a href="/blog/entry?action=view&id=<?=$entry->id?>"><?=$entry->title?></a></h2>
+<p><?=$entry->text?></p>
+<p>Autor: <a href="/blog/?filterAuthor=<?=$entry->username?>"><?=$entry->username?></a> | <a href="/blog/entry?action=view&id=<?=$entry->id?>"><?=(isset($entry->commentCount)?$entry->commentCount:count($response->entry_comments))?> Kommentare</a></p>
+<hr/>
+<?php
+//single entry view, add comments
+if(isset($response->action) && ($response->action=='view' || $response->action=='comment')) {
+
+    if(count($response->entry_comments)>0) {
+        
+        foreach($response->entry_comments as $comment) { ?>
+            <div class="mod bubble bubbleTop yowza">
+                    <b class="top"><b class="tl"></b><b class="tr"></b></b>
+                    <div class="inner">
+                            <div class="hd fire">
+                                    <h3><?
+                                        if($comment['url']!='') echo "<a href=".$comment['url'].">";
+                                        echo htmlentities($comment['name']);
+                                        if($comment['url']!='') echo "</a>";
+                                        echo " meint: (".$comment['date']."):<br/>";
+                                    ?></h3>
+                            </div>
+                            <div class="bd">
+                                    <p><?=$comment['comment']?></p>
+                            </div>
+                    </div>
+                    <b class="bottom"><b class="bl"></b><b class="br"></b></b>
+            </div>
+        <? }//end foreach
+        
+    }
+    
+    ?>
+    <h4>Kommentar schreiben:</h4>
+    <fieldset class="mam" title="Kommentieren">
+      <?php
+      if(isset($response->error)) { ?>
+        <h3 style="color:red;">Bitte alle Felder ausf&uuml;llen.</h3>
+      <?php } ?>
+       <form action="/blog/entry?action=comment&id=<?=$entry->id?>" method="post">
+         <table>
+            <tr>
+               <td>Name</td>
+               <td><input type="text" name="name" value="<?php echo htmlentities($request->getValue('name')); ?>" /></td>
+            </tr>
+            <tr>
+               <td>Email (optional)</td>
+               <td><input type="text" name="email" value="<?php echo htmlentities($request->getValue('email')); ?>" /></td>
+            </tr>
+            <tr>
+               <td>URL (optional)</td>
+               <td><input type="text" name="url" value="<?php echo htmlentities($request->getValue('url')); ?>" /></td>
+            </tr>
+            <tr>
+               <td>Bemerkung</td>
+               <td><textarea name="comment"><?php echo htmlentities($request->getValue('comment')); ?></textarea></td>
+            </tr>
+            <tr>
+               <td>&#160;</td>
+               <td><input type="submit" value="Absenden" /></td>
+            </tr>
+        </table>
+       </form>
+    </fieldset>  
+
+<? } elseif($request->getValue('action')=='comment') { ?>
+    <p class="ok">Kommentar erfolgreich gespeichert</p>
+<? } ?>

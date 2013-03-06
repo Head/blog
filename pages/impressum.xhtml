@@ -1,0 +1,15 @@
+<?php include('header.xhtml') ?>
+
+<h3>Impressum</h3>
+<?
+foreach($response->users as $user) {
+    echo "<h4>Author <a href=\"/blog/?filterAuthor=".$user['username']."\">".$user['username']."</h4>";
+    echo "<p>";
+    echo $user['fullname']."<br/>";
+    echo $user['street']."<br/>";
+    echo $user['zip']." ".$user['city'];
+    echo "</p>";
+}
+?>
+
+<?php include('footer.xhtml') ?>

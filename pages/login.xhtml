@@ -1,0 +1,24 @@
+<?php include('header.xhtml') ?>
+    <fieldset id="login" title="Login">
+      <?php
+      if(isset($response->loginfailed)) { ?>
+        <h3 style="color:red;">Login failed. Please try again</h3>
+      <?php } ?>
+       <form action="/blog/login?action=login" method="post">
+         <table>
+            <tr>
+               <td>Login:</td>
+               <td><input type="text" name="username" value="<?php echo $request->getValue('username'); ?>" /></td>
+            </tr>
+            <tr>
+               <td>Password:</td>
+               <td><input type="password" name="passwd" value="<?php echo $request->getValue('passwd'); ?>" /></td>
+            </tr>
+            <tr>
+               <td>&#160;</td>
+               <td><input type="submit" value="Login!" /></td>
+            </tr>
+        </table>
+       </form>
+    </fieldset>    
+<?php include('footer.xhtml') ?>

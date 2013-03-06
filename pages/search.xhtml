@@ -1,0 +1,20 @@
+<?php include('header.xhtml') ?>
+    <fieldset id="login" title="Login">
+      <?php
+      if($request->getValue('notfound')) { ?>
+        <h3 style="color:red;">Es wurde leider kein Eintrag gefunden.</h3>
+      <?php } ?>
+       <form action="/blog/" method="get">
+         <table>
+            <tr>
+               <td>Suchtext</td>
+               <td><input type="text" name="search" value="<?php echo htmlentities($request->getValue('search')); ?>" /></td>
+            </tr>
+            <tr>
+               <td>&#160;</td>
+               <td><input type="submit" value="Suchen" /></td>
+            </tr>
+        </table>
+       </form>
+    </fieldset>    
+<?php include('footer.xhtml') ?>
